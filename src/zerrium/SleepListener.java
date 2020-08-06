@@ -61,15 +61,15 @@ public class SleepListener implements Listener{
             switch(p.getWorld().getEnvironment()){
                 case NORMAL:
                     Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                            " enters overworld! "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
+                            " enters overworld "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
                     break;
                 case NETHER:
                     Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                            " enters nether! "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
+                            " enters nether "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
                     break;
                 case THE_END:
                     Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                            " enters the end! "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
+                            " enters the end "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
                     break;
             }
         }
@@ -83,11 +83,11 @@ public class SleepListener implements Listener{
                 if(event.getValue()){ //goes AFK
                     if(p.isSleeping()) counter--;
                     Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                                    " is AFK! "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
+                                    " is AFK "+ChatColor.AQUA+"["+counter+"/"+(getRequired()-1)+"]");
                 }else{
                     if(p.isSleeping()) counter++;
                     Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                                    " is no longer AFK! "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
+                                    " is no longer AFK "+ChatColor.AQUA+"["+counter+"/"+(getRequired()+1)+"]");
                 }
             }
         }
@@ -99,7 +99,7 @@ public class SleepListener implements Listener{
             Player p = event.getPlayer();
             if(p.getWorld().getEnvironment().equals(Environment.NORMAL)){
                 Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                                    " joined the game! "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
+                                    " joined the game "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
             }
         }
     }
@@ -111,7 +111,7 @@ public class SleepListener implements Listener{
             if(p.getWorld().getEnvironment().equals(Environment.NORMAL)){
                 if(p.isSleeping()) counter--;
                 Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                                    " left the game! "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
+                                    " left the game "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
             }
         }
     }
@@ -123,7 +123,7 @@ public class SleepListener implements Listener{
             if(p.getWorld().getEnvironment().equals(Environment.NORMAL)){
                 if(p.isSleeping()) counter--;
                 Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                                    " is kicked from the game! "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
+                                    " is kicked from the game "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
             }
         }
     }
