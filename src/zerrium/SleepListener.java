@@ -71,6 +71,8 @@ public class SleepListener implements Listener{
                     Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
                             " enters the end "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
                     break;
+                default:
+                    break;
             }
         }
     }
