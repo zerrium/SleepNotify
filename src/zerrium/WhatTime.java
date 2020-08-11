@@ -32,6 +32,8 @@ public class WhatTime implements CommandExecutor{
                 case THE_END:
                     dim = "the end";
                     break;
+                default:
+                    break;
             }
             int hours = (int) ((Math.floor(time / 1000.0) + 6) % 24);
             int minutes = (int) Math.floor((time % 1000) / 1000.0 * 60);
