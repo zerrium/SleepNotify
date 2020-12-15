@@ -1,7 +1,7 @@
 name: SleepNotify
 version: 0.3
 main: zerrium.SleepNotify
-api-version: 1.13
+api-version: 1.12
 author: zerrium
 softdepend: [Essentials]
 commands:
