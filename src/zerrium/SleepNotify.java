@@ -12,7 +12,7 @@ public class SleepNotify extends JavaPlugin{
     
     @Override
     public void onEnable() {
-        System.out.println(ChatColor.YELLOW+"[SleepNotify] v0.3 by zerrium");
+        System.out.println(ChatColor.YELLOW+"[SleepNotify] v0.3.1 (1.12.2 Edition) by zerrium");
         getServer().getPluginManager().registerEvents(new SleepListener(), this);
         this.getCommand("t").setExecutor(new WhatTime());
         if(Bukkit.getPluginManager().getPlugin("Essentials") != null || Bukkit.getPluginManager().getPlugin("EssentialsX") != null){

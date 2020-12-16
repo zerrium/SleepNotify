@@ -32,6 +32,15 @@ public class SleepListener implements Listener{
         counter++;
         Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+event.getPlayer().getName()+
                 " is sleeping! "+ChatColor.AQUA+"["+counter+"/"+required+"]");
+        if(counter == required){
+            while(true){
+                if(time == 0){
+                    counter = 0;
+                    Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+"Night has been skipped. It's morning!");
+                    break;
+                }
+            }
+        }
     }
     
     @EventHandler
@@ -41,13 +50,6 @@ public class SleepListener implements Listener{
             Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+event.getPlayer().getName()+
                     " cancels sleeping! "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
         }
-    }
-    
-    @EventHandler
-    public void onNightSkipped(TimeSkipEvent event){
-        counter = 0;
-        if(event.getWorld().getTime() == 0)
-            Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+"Night has been skipped. It's morning!");
     }
 
     @EventHandler

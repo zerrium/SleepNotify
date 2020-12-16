@@ -1,5 +1,5 @@
 name: SleepNotify
-version: 0.3
+version: 0.3.1
 main: zerrium.SleepNotify
 api-version: 1.12
 author: zerrium
