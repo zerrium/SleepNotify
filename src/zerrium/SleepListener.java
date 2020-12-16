@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerBedEnterEvent;
@@ -33,13 +32,8 @@ public class SleepListener implements Listener{
         Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+event.getPlayer().getName()+
                 " is sleeping! "+ChatColor.AQUA+"["+counter+"/"+required+"]");
         if(counter == required){
-            while(true){
-                if(time == 0){
-                    counter = 0;
-                    Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+"Night has been skipped. It's morning!");
-                    break;
-                }
-            }
+            counter = 0;
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[SleepNotify] " + ChatColor.RESET + "Night has been skipped. It's morning!");
         }
     }
     
@@ -55,22 +49,27 @@ public class SleepListener implements Listener{
     @EventHandler
     public void onPlayerChangeDimension(PlayerChangedWorldEvent event){
         if(counter != 0){
+            int required = getRequired();
             Player p = event.getPlayer();
             switch(p.getWorld().getEnvironment()){
                 case NORMAL:
                     Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                            " enters overworld "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
+                            " enters overworld "+ChatColor.AQUA+"["+counter+"/"+required+"]");
                     break;
                 case NETHER:
                     Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                            " enters nether "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
+                            " enters nether "+ChatColor.AQUA+"["+counter+"/"+required+"]");
                     break;
                 case THE_END:
                     Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                            " enters the end "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
+                            " enters the end "+ChatColor.AQUA+"["+counter+"/"+required+"]");
                     break;
                 default:
                     break;
+            }
+            if(counter == required){
+                counter = 0;
+                Bukkit.broadcastMessage(ChatColor.GOLD + "[SleepNotify] " + ChatColor.RESET + "Night has been skipped. It's morning!");
             }
         }
     }
@@ -78,16 +77,21 @@ public class SleepListener implements Listener{
     @EventHandler
     public void onPlayerAfkToggle(AfkStatusChangeEvent event){
         if(counter != 0){
+            int required = getRequired();
             Player p = event.getAffected().getBase();
             if(p.getWorld().getEnvironment().equals(Environment.NORMAL)){
                 if(event.getValue()){ //goes AFK
                     if(p.isSleeping()) counter--;
                     Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                                    " is AFK "+ChatColor.AQUA+"["+counter+"/"+(getRequired()-1)+"]");
+                                    " is AFK "+ChatColor.AQUA+"["+counter+"/"+(required-1)+"]");
+                    if(counter == (required-1)){
+                        counter = 0;
+                        Bukkit.broadcastMessage(ChatColor.GOLD + "[SleepNotify] " + ChatColor.RESET + "Night has been skipped. It's morning!");
+                    }
                 }else{
                     if(p.isSleeping()) counter++;
                     Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                                    " is no longer AFK "+ChatColor.AQUA+"["+counter+"/"+(getRequired()+1)+"]");
+                                    " is no longer AFK "+ChatColor.AQUA+"["+counter+"/"+(required+1)+"]");
                 }
             }
         }
@@ -107,11 +111,16 @@ public class SleepListener implements Listener{
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event){
         if(counter != 0){
+            int required = getRequired()-1;
             Player p = event.getPlayer();
             if(p.getWorld().getEnvironment().equals(Environment.NORMAL)){
                 if(p.isSleeping()) counter--;
                 Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                                    " left the game "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
+                                    " left the game "+ChatColor.AQUA+"["+counter+"/"+required+"]");
+            }
+            if(counter == required){
+                counter = 0;
+                Bukkit.broadcastMessage(ChatColor.GOLD + "[SleepNotify] " + ChatColor.RESET + "Night has been skipped. It's morning!");
             }
         }
     }
@@ -119,11 +128,16 @@ public class SleepListener implements Listener{
     @EventHandler
     public void onPlayerKick(PlayerKickEvent event){
         if(counter != 0){
+            int required = getRequired()-1;
             Player p = event.getPlayer();
             if(p.getWorld().getEnvironment().equals(Environment.NORMAL)){
                 if(p.isSleeping()) counter--;
                 Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                                    " is kicked from the game "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
+                                    " is kicked from the game "+ChatColor.AQUA+"["+counter+"/"+required+"]");
+            }
+            if(counter == required){
+                counter = 0;
+                Bukkit.broadcastMessage(ChatColor.GOLD + "[SleepNotify] " + ChatColor.RESET + "Night has been skipped. It's morning!");
             }
         }
     }
