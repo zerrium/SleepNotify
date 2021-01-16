@@ -1,10 +1,12 @@
 package zerrium;
 
 import com.earth2me.essentials.IEssentials;
+
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
-import net.ess3.api.events.AfkStatusChangeEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,28 +17,37 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.world.TimeSkipEvent;
-import org.bukkit.event.world.TimeSkipEvent.SkipReason;
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  *
  * @author willysusilo
  */
 public class SleepListener implements Listener{
-    private static int counter = 0;
+    protected static int counter = 0;
     
     @EventHandler
     public void onPlayerSleep(PlayerBedEnterEvent event){
-        if(event.getBedEnterResult().equals(PlayerBedEnterEvent.BedEnterResult.OK)){
-            counter++;
-            Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+event.getPlayer().getName()+
-                    " is sleeping! "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
+        if(SleepNotify.version < 1){
+            if(event.isCancelled()) return;
+        }else{
+            if(!event.getBedEnterResult().equals(PlayerBedEnterEvent.BedEnterResult.OK)) return;
         }
+        int required = getRequired();
+        counter++;
+        Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+event.getPlayer().getName()+
+                " is sleeping! "+ChatColor.AQUA+"["+counter+"/"+required+"]");
+        if(SleepNotify.version < 2 && counter == required) NightSkip();
     }
     
     @EventHandler
     public void onPlayerCancelSleep(PlayerBedLeaveEvent event){
         if(event.getPlayer().getWorld().getTime()!=0){
+            if(SleepNotify.hasEssentials){
+                IEssentials ess = (IEssentials) Bukkit.getPluginManager().getPlugin("Essentials");//see if he is AFK using essentials API
+                assert ess != null;
+                if(ess.getUser(event.getPlayer()).isAfk()) return;
+            }
             counter--;
             Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+event.getPlayer().getName()+
                     " cancels sleeping! "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
@@ -44,54 +55,27 @@ public class SleepListener implements Listener{
     }
     
     @EventHandler
-    public void onNightSkipped(TimeSkipEvent event){
-        counter = 0;
-        SkipReason sr = event.getSkipReason();
-        if(sr.equals(SkipReason.NIGHT_SKIP)){ //skipped time by vanilla
-            Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+"Night has been skipped. It's morning!");
-        }else if(sr.equals(SkipReason.CUSTOM) && event.getWorld().getTime()==0){ //skipped time by plugin
-            Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+"Night has been skipped. It's morning!");
-        }
-    }
-    
-    @EventHandler
     public void onPlayerChangeDimension(PlayerChangedWorldEvent event){
         if(counter != 0){
             Player p = event.getPlayer();
+            int required = getRequired();
             switch(p.getWorld().getEnvironment()){
                 case NORMAL:
                     Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                            " enters overworld "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
+                            " enters overworld "+ChatColor.AQUA+"["+counter+"/"+(required+=1)+"]");
                     break;
                 case NETHER:
                     Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                            " enters nether "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
+                            " enters nether "+ChatColor.AQUA+"["+counter+"/"+(required-=1)+"]");
                     break;
                 case THE_END:
                     Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                            " enters the end "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
+                            " enters the end "+ChatColor.AQUA+"["+counter+"/"+(required-=1)+"]");
                     break;
                 default:
                     break;
             }
-        }
-    }
-    
-    @EventHandler
-    public void onPlayerAfkToggle(AfkStatusChangeEvent event){
-        if(counter != 0){
-            Player p = event.getAffected().getBase();
-            if(p.getWorld().getEnvironment().equals(Environment.NORMAL)){
-                if(event.getValue()){ //goes AFK
-                    if(p.isSleeping()) counter--;
-                    Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                                    " is AFK "+ChatColor.AQUA+"["+counter+"/"+(getRequired()-1)+"]");
-                }else{
-                    if(p.isSleeping()) counter++;
-                    Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                                    " is no longer AFK "+ChatColor.AQUA+"["+counter+"/"+(getRequired()+1)+"]");
-                }
-            }
+            if(SleepNotify.version < 2 && counter == required) NightSkip();
         }
     }
     
@@ -101,7 +85,7 @@ public class SleepListener implements Listener{
             Player p = event.getPlayer();
             if(p.getWorld().getEnvironment().equals(Environment.NORMAL)){
                 Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                                    " joined the game "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
+                                    " joined the game "+ChatColor.AQUA+"["+counter+"/"+(getRequired()+1)+"]");
             }
         }
     }
@@ -110,11 +94,13 @@ public class SleepListener implements Listener{
     public void onPlayerQuit(PlayerQuitEvent event){
         if(counter != 0){
             Player p = event.getPlayer();
+            int required = getRequired();
             if(p.getWorld().getEnvironment().equals(Environment.NORMAL)){
                 if(p.isSleeping()) counter--;
                 Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                                    " left the game "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
+                                    " left the game "+ChatColor.AQUA+"["+counter+"/"+(required-=1)+"]");
             }
+            if(SleepNotify.version < 2 && counter == required) NightSkip();
         }
     }
     
@@ -122,20 +108,23 @@ public class SleepListener implements Listener{
     public void onPlayerKick(PlayerKickEvent event){
         if(counter != 0){
             Player p = event.getPlayer();
+            int required = getRequired();
             if(p.getWorld().getEnvironment().equals(Environment.NORMAL)){
                 if(p.isSleeping()) counter--;
                 Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                                    " is kicked from the game "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
+                                    " is kicked from the game "+ChatColor.AQUA+"["+counter+"/"+(required-=1)+"]");
             }
+            if(SleepNotify.version < 2 && counter == required) NightSkip();
         }
     }
     
-    private static int getRequired(){
+    protected static int getRequired(){
         AtomicInteger required = new AtomicInteger(0);
         Bukkit.getOnlinePlayers().forEach(i -> {
             if(i.getWorld().getEnvironment().equals(Environment.NORMAL)){ //check if the player is at overworld
                 if(SleepNotify.hasEssentials){ //Check if the server installs essentials
                     IEssentials ess = (IEssentials) Bukkit.getPluginManager().getPlugin("Essentials");//see if he is AFK using essentials API
+                    assert ess != null;
                     if(!ess.getUser(i).isAfk()){
                         required.getAndIncrement();
                     }
@@ -145,5 +134,26 @@ public class SleepListener implements Listener{
             }
         });
         return required.intValue();
+    }
+
+    protected static void NightSkip(){
+        BukkitRunnable r = new BukkitRunnable() {
+            @Override
+            public void run() {
+                ArrayList<World> worlds = new ArrayList<>();
+                for(World w:Bukkit.getWorlds()){
+                    if(w.getEnvironment() == Environment.NORMAL){
+                        worlds.add(w);
+                    }
+                }
+                worlds.forEach( w ->{
+                    while(w.getTime() !=0 && (w.getTime() > 12542 || (w.hasStorm() && w.isThundering()))){
+                        if(w.getTime() < 1000 || w.getTime() > 23460) break;
+                    }
+                    Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+"Night has been skipped. It's morning!");
+                });
+            }
+        };
+        r.runTaskAsynchronously(SleepNotify.getPlugin(SleepNotify.class));
     }
 }
