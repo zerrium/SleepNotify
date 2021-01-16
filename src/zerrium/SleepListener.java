@@ -3,6 +3,7 @@ package zerrium;
 import com.earth2me.essentials.IEssentials;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -140,18 +141,10 @@ public class SleepListener implements Listener{
         BukkitRunnable r = new BukkitRunnable() {
             @Override
             public void run() {
-                ArrayList<World> worlds = new ArrayList<>();
-                for(World w:Bukkit.getWorlds()){
-                    if(w.getEnvironment() == Environment.NORMAL){
-                        worlds.add(w);
-                    }
+                while(Objects.requireNonNull(Bukkit.getWorld("world")).getTime() !=0 && (Objects.requireNonNull(Bukkit.getWorld("world")).getTime() > 12542 || (Objects.requireNonNull(Bukkit.getWorld("world")).hasStorm() && Objects.requireNonNull(Bukkit.getWorld("world")).isThundering()))){
+                    if(Objects.requireNonNull(Bukkit.getWorld("world")).getTime() < 1000 || Objects.requireNonNull(Bukkit.getWorld("world")).getTime() > 23460) break;
                 }
-                worlds.forEach( w ->{
-                    while(w.getTime() !=0 && (w.getTime() > 12542 || (w.hasStorm() && w.isThundering()))){
-                        if(w.getTime() < 1000 || w.getTime() > 23460) break;
-                    }
-                    Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+"Night has been skipped. It's morning!");
-                });
+                Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+"Night has been skipped. It's morning!");
             }
         };
         r.runTaskAsynchronously(SleepNotify.getPlugin(SleepNotify.class));
