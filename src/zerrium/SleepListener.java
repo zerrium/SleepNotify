@@ -144,6 +144,7 @@ public class SleepListener implements Listener{
                 while(Objects.requireNonNull(Bukkit.getWorld("world")).getTime() !=0 && (Objects.requireNonNull(Bukkit.getWorld("world")).getTime() > 12542 || (Objects.requireNonNull(Bukkit.getWorld("world")).hasStorm() && Objects.requireNonNull(Bukkit.getWorld("world")).isThundering()))){
                     if(Objects.requireNonNull(Bukkit.getWorld("world")).getTime() < 1000 || Objects.requireNonNull(Bukkit.getWorld("world")).getTime() > 23460) break;
                 }
+                counter = 0;
                 Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+"Night has been skipped. It's morning!");
             }
         };
