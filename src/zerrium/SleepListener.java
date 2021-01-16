@@ -2,12 +2,10 @@ package zerrium;
 
 import com.earth2me.essentials.IEssentials;
 
-import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -63,15 +61,15 @@ public class SleepListener implements Listener{
             switch(p.getWorld().getEnvironment()){
                 case NORMAL:
                     Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                            " enters overworld "+ChatColor.AQUA+"["+counter+"/"+(required+=1)+"]");
+                            " enters overworld "+ChatColor.AQUA+"["+counter+"/"+required+"]");
                     break;
                 case NETHER:
                     Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                            " enters nether "+ChatColor.AQUA+"["+counter+"/"+(required-=1)+"]");
+                            " enters nether "+ChatColor.AQUA+"["+counter+"/"+required+"]");
                     break;
                 case THE_END:
                     Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                            " enters the end "+ChatColor.AQUA+"["+counter+"/"+(required-=1)+"]");
+                            " enters the end "+ChatColor.AQUA+"["+counter+"/"+required+"]");
                     break;
                 default:
                     break;
@@ -86,7 +84,7 @@ public class SleepListener implements Listener{
             Player p = event.getPlayer();
             if(p.getWorld().getEnvironment().equals(Environment.NORMAL)){
                 Bukkit.broadcastMessage(ChatColor.GOLD+"[SleepNotify] "+ChatColor.RESET+p.getName()+
-                                    " joined the game "+ChatColor.AQUA+"["+counter+"/"+(getRequired()+1)+"]");
+                                    " joined the game "+ChatColor.AQUA+"["+counter+"/"+getRequired()+"]");
             }
         }
     }

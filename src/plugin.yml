@@ -1,5 +1,5 @@
 name: SleepNotify
-version: 0.4
+version: 1.0
 main: zerrium.SleepNotify
 api-version: 1.13
 author: zerrium
@@ -9,3 +9,7 @@ commands:
       description: Tell what time it is in your current dimension
       usage: /t
       permission: SleepNotify.whattime
+   sleepnotify:
+      description: Fix the counter back to 0
+      usage: /sleepnotify fix
+      permission: SleepNotify.fix

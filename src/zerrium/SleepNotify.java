@@ -20,6 +20,7 @@ public class SleepNotify extends JavaPlugin{
         getServer().getPluginManager().registerEvents(new SleepListener(), this);
         if(version > 1) getServer().getPluginManager().registerEvents(new NightSkipListener(), this);
         Objects.requireNonNull(this.getCommand("t")).setExecutor(new WhatTime());
+        Objects.requireNonNull(this.getCommand("sleepnotify")).setExecutor(new CounterFix());
         if(Bukkit.getPluginManager().getPlugin("Essentials") != null || Bukkit.getPluginManager().getPlugin("EssentialsX") != null){
             System.out.println(ChatColor.YELLOW+"[SleepNotify] Essentials plugin detected. AFK detection for sleep notification is hooked.");
             getServer().getPluginManager().registerEvents(new AfkListener(), this);
@@ -31,7 +32,7 @@ public class SleepNotify extends JavaPlugin{
 
     @Override
     public void onDisable() {
-        System.out.println(ChatColor.YELLOW+"[SleepNotify] v0.4 disabling plugin");
+        System.out.println(ChatColor.YELLOW+"[SleepNotify] v1.0 disabling plugin");
     }
 
     protected static int getVersion(){
